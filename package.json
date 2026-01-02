@@ -32,5 +32,9 @@
   "version": "0.1.0",
   "devDependencies": {
     "webpack-dev-server": "^3"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "build:css": "webpack --config webpack.config.js"
   }
 }
