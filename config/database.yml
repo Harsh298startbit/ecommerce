@@ -22,4 +22,7 @@ test:
 
 production:
   <<: *default
-  database: db/production.sqlite3
+  database: ecommerce_64xq
+  username: pecommerce_64xq_user
+  password: GM2uC7kEKuN4zjTcrFHfnYkieqnDFtmf
+ 
