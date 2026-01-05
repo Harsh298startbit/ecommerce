@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   get 'pages/about'
   get 'pages/blog'
   get 'pages/contact'
+  post 'pages/contact', to: 'pages#contact_submit'
+  post 'subscribe', to: 'pages#subscribe'
   # Authentication routes
   get 'signup', to: 'users#new'
   post 'signup', to: 'users#create'

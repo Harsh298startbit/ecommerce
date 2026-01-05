@@ -44,9 +44,9 @@
                 <% end %>
               </div>
             </li>
-	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+	           <li class="nav-item"><%= link_to "About", pages_about_path, class: "nav-link" %></li>
+	          <li class="nav-item"><%= link_to "Blog", pages_blog_path, class: "nav-link" %></li>
+	          <li class="nav-item"><%= link_to "Contact", pages_contact_path, class: "nav-link" %></li>
 	          
 	          <% if logged_in? %>
 	            <li class="nav-item dropdown">
@@ -59,9 +59,9 @@
 	              </div>
 	            </li>
 	            <li class="nav-item cta cta-colored">
-	              <%= link_to cart_path, class: "nav-link" do %>
+	               <%= link_to cart_path, class: "nav-link" do %>
 	                <span class="icon-shopping_cart"></span>
-	                [<%= current_cart&.total_items || 0 %>]
+	                [<span class="cart-count"><%= current_cart&.total_items || 0 %></span>]
 	              <% end %>
 	            </li>
 	          <% else %>
