@@ -70,7 +70,7 @@ Rails.application.configure do
   
   # Action Mailer settings for production
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.default_url_options = { host: ENV['MAILER_HOST'] || 'yourdomain.com', protocol: 'https' }
+  # config.action_mailer.default_url_options = { host: ENV['MAILER_HOST'] || 'yourdomain.com', protocol: 'https' }
   
   config.action_mailer.smtp_settings = {
     address:              'smtp.gmail.com',
@@ -79,8 +79,9 @@ Rails.application.configure do
     user_name:            ENV['GMAIL_USERNAME'],
     password:             ENV['GMAIL_PASSWORD'],
     authentication:       'plain',
-    ssl:                  true, 
-    tls:                  false
+    enable_starttls_auto: true,
+    open_timeout:         5,
+    read_timeout:         5
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
