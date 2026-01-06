@@ -80,8 +80,8 @@ Rails.application.configure do
     password:             'arpfnhrbypddmbbt',
     authentication:       :plain,
     enable_starttls_auto: true,
-    open_timeout:         300,
-    read_timeout:         300
+    open_timeout:         10,
+    read_timeout:         10
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

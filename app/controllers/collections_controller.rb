@@ -3,7 +3,7 @@ class CollectionsController < ApplicationController
 
   def index
     @collections = Collection.all.order(created_at: :desc)
-    @products = Product.includes(:product_variants, :collection).paginate(page: params[:page], per_page: 9)
+    @products = Product.includes(:product_variants, :collection).paginate(page: params[:page], per_page: 3)
     
     # Apply filters
     @products = filter_by_search(@products)

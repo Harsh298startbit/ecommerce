@@ -22,7 +22,7 @@ test:
 
 production:
   <<: *default
-  database: ecommerce_64xq
-  username: pecommerce_64xq_user
-  password: GM2uC7kEKuN4zjTcrFHfnYkieqnDFtmf
+  database: ecommerce_3d0l
+  username: ecommerce_3d0l_user
+  password: umXEc1AhVxilpHwoONYBqOaeBLDghOrL
  
