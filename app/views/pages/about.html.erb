@@ -57,7 +57,7 @@
       <div class="col-md-6 d-flex align-items-center">
         <%= form_with url: subscribe_path, method: :post, class: "subscribe-form", local: true do %>
           <div class="form-group d-flex">
-            <%= email_field_tag :email, nil, class: "form-control", placeholder: "Enter email address" %>
+            <%= email_field_tag :email, nil, class: "form-control", placeholder: "Enter email address", required: true %>
             <%= submit_tag "Subscribe", class: "submit px-3" %>
           </div>
         <% end %>

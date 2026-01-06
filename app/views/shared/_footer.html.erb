@@ -7,11 +7,12 @@
       </div>
 
       <div class="col-md-6 d-flex align-items-center">
-        <%= form_with url: "#", method: :post, local: true, class: "subscribe-form" do %>
+        <%= form_with url: subscribe_path, method: :post, local: true, class: "subscribe-form" do %>
           <div class="form-group d-flex">
             <%= email_field_tag :email, nil,
                   class: "form-control",
-                  placeholder: "Enter email address" %>
+                  placeholder: "Enter email address",
+                  required: true %>
             <%= submit_tag "Subscribe", class: "submit px-3" %>
           </div>
         <% end %>

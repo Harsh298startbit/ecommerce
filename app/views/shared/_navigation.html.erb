@@ -38,10 +38,7 @@
                   <%= link_to "Juices", shop_path(collection: "juice"), class: "dropdown-item" %>
                   <%= link_to "Dried", shop_path(collection: "dried"), class: "dropdown-item" %>
 
-                <% if logged_in? %>
-                  <%= link_to "Wishlist", wishlist_items_path, class: "dropdown-item" %>
-                  <%= link_to "My Cart", cart_path, class: "dropdown-item" %>
-                <% end %>
+                
               </div>
             </li>
 	           <li class="nav-item"><%= link_to "About", pages_about_path, class: "nav-link" %></li>
@@ -55,6 +52,10 @@
 	              </a>
 	              <div class="dropdown-menu">
 	                <%= link_to "My Cart", cart_path, class: "dropdown-item" %>
+					<% if logged_in? %>
+                  <%= link_to "Wishlist", wishlist_items_path, class: "dropdown-item" %>
+                  <%= link_to "My Cart", cart_path, class: "dropdown-item" %>
+                <% end %>
 	                <%= link_to "Logout", logout_path, method: :delete, class: "dropdown-item" %>
 	              </div>
 	            </li>

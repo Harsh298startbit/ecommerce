@@ -29,9 +29,10 @@ class PagesController < ApplicationController
     # Handle newsletter subscription
     email = params[:email]
     
-    if email.present?
-      # You can add logic here to save to database or send to email service
-      flash[:notice] = "Thank you for subscribing! You'll receive updates at #{email}"
+    if email.present? && email.match?(URI::MailTo::EMAIL_REGEXP)
+      # Send subscription confirmation email
+      UserMailer.subscription_confirmation(email).deliver_now
+      flash[:notice] = "Thank you for subscribing! Check your email for confirmation."
     else
       flash[:alert] = "Please enter a valid email address"
     end
