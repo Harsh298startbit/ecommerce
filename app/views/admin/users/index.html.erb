@@ -1,0 +1,113 @@
+<div class="hero-wrap hero-bread" style="background-image: url('<%= asset_path("bg_1.jpg") %>');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs">
+          <span class="mr-2"><%= link_to "Home", root_path %></span> 
+          <span class="mr-2"><%= link_to "Admin", admin_root_path %></span> 
+          <span>Users</span>
+        </p>
+        <h1 class="mb-0 bread">User Management</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <h3>All Users (<%= @users.total_entries %>)</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Registered</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @users.each do |user| %>
+                <tr id="user-<%= user.id %>">
+                  <td><%= user.id %></td>
+                  <td><%= user.name %></td>
+                  <td><%= user.email %></td>
+                  <td>
+                    <% if user.id == current_user.id %>
+                      <span class="badge badge-success">Admin (You)</span>
+                    <% else %>
+                      <span class="badge badge-<%= user.admin? ? 'success' : 'secondary' %> user-role-badge-<%= user.id %>">
+                        <%= user.admin? ? 'Admin' : 'Customer' %>
+                      </span>
+                    <% end %>
+                  </td>
+                  <td><%= user.created_at.strftime("%b %d, %Y") %></td>
+                  <td>
+                    <% unless user.id == current_user.id %>
+                      <%= button_tag "Toggle Role", 
+                          class: "btn btn-sm btn-warning toggle-admin-btn", 
+                          data: { user_id: user.id } %>
+                      <%= link_to "Delete", admin_user_path(user), 
+                          method: :delete, 
+                          data: { confirm: "Are you sure you want to delete this user?" },
+                          class: "btn btn-sm btn-danger" %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        
+      
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle toggle admin role
+  document.querySelectorAll('.toggle-admin-btn').forEach(function(button) {
+    button.addEventListener('click', function() {
+      const userId = this.dataset.userId;
+      const url = '/admin/users/' + userId + '/toggle_admin';
+      
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update badge
+          const badge = document.querySelector('.user-role-badge-' + userId);
+          badge.textContent = data.is_admin ? 'Admin' : 'Customer';
+          badge.className = 'badge badge-' + (data.is_admin ? 'success' : 'secondary') + ' user-role-badge-' + userId;
+          
+          // Show success message
+          alert(data.message);
+        } else {
+          alert(data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update user role');
+      });
+    });
+  });
+});
+</script>

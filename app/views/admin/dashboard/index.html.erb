@@ -1,0 +1,94 @@
+<div class="hero-wrap hero-bread" style="background-image: url('<%= asset_path("bg_1.jpg") %>');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs"><span class="mr-2"><%= link_to "Home", root_path %></span> <span>Admin Dashboard</span></p>
+        <h1 class="mb-0 bread">Admin Dashboard</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="ftco-section">
+  <div class="container">
+    <!-- Statistics Cards -->
+    <div class="row mb-5">
+      <div class="col-md-3">
+        <div class="card text-center p-4 bg-primary text-white">
+          <h2 class="mb-0"><%= @total_users %></h2>
+          <p class="mb-0">Total Users</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center p-4 bg-success text-white">
+          <h2 class="mb-0"><%= @total_orders %></h2>
+          <p class="mb-0">Total Orders</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center p-4 bg-info text-white">
+          <h2 class="mb-0"><%= @total_products %></h2>
+          <p class="mb-0">Total Products</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center p-4 bg-warning text-white">
+          <h2 class="mb-0">$<%= number_with_precision(@total_revenue, precision: 2) %></h2>
+          <p class="mb-0">Total Revenue</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <h3 class="mb-3">Quick Actions</h3>
+        <div class="btn-group" role="group">
+          <%= link_to "Manage Users", admin_users_path, class: "btn btn-primary" %>
+          <%= link_to "Manage Products", admin_products_path, class: "btn btn-success" %>
+          <%= link_to "View All Orders", admin_orders_path, class: "btn btn-info" %>
+          <%= link_to "Create New Product", new_admin_product_path, class: "btn btn-warning" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row">
+      <div class="col-md-12">
+        <h3 class="mb-3">Recent Orders</h3>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @recent_orders.each do |order| %>
+                <tr>
+                  <td><%= order.order_number %></td>
+                  <td><%= order.user.name %></td>
+                  <td><%= order.created_at.strftime("%b %d, %Y") %></td>
+                  <td>
+                    <span class="badge badge-<%= order.status == 'completed' ? 'success' : 'warning' %>">
+                      <%= order.status.titleize %>
+                    </span>
+                  </td>
+                  <td>$<%= number_with_precision(order.total_amount, precision: 2) %></td>
+                  <td>
+                    <%= link_to "View", admin_order_path(order), class: "btn btn-sm btn-info" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,72 @@
+<div class="hero-wrap hero-bread" style="background-image: url('<%= asset_path("bg_1.jpg") %>');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs">
+          <span class="mr-2"><%= link_to "Home", root_path %></span> 
+          <span class="mr-2"><%= link_to "Admin", admin_root_path %></span> 
+          <span>Orders</span>
+        </p>
+        <h1 class="mb-0 bread">Order Management</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <h3>All Orders (<%= @orders.total_entries %>)</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @orders.each do |order| %>
+                <tr>
+                  <td><%= order.order_number %></td>
+                  <td><%= order.user.name %></td>
+                  <td><%= order.email %></td>
+                  <td><%= order.created_at.strftime("%b %d, %Y %I:%M %p") %></td>
+                  <td>
+                    <span class="badge badge-<%= 
+                      case order.status
+                      when 'completed' then 'success'
+                      when 'paid' then 'info'
+                      when 'cancelled' then 'danger'
+                      else 'warning'
+                      end
+                    %>">
+                      <%= order.status.titleize %>
+                    </span>
+                  </td>
+                  <td>$<%= number_with_precision(order.total_amount, precision: 2) %></td>
+                  <td>
+                    <%= link_to "View Details", admin_order_path(order), class: "btn btn-sm btn-info" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        
+      
+      </div>
+    </div>
+  </div>
+</section>

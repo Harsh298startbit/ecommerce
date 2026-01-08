@@ -1,0 +1,228 @@
+<!-- HERO SECTION -->
+<%= javascript_pack_tag "variant_selector", "data-turbolinks-track": "reload" %>
+
+<div class="hero-wrap hero-bread"
+     style="background-image: url('<%= asset_path("bg_1.jpg") %>');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs">
+          <span class="mr-2"><%= link_to "Home", root_path %></span>
+          <span class="mr-2"><%= link_to "Products", products_path %></span>
+          <span><%= @product.name %></span>
+        </p>
+        <h1 class="mb-0 bread"><%= @product.name %></h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAILS -->
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+
+      <!-- IMAGE -->
+      <div class="col-lg-6 mb-5 ftco-animate">
+        <% if @product.image.attached? %>
+          <%= image_tag @product.image,
+                        class: "img-fluid",
+                        alt: @product.name %>
+        <% else %>
+          <%= image_tag "product-5.jpg",
+                        class: "img-fluid",
+                        alt: @product.name %>
+        <% end %>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="col-lg-6 product-details pl-md-5 ftco-animate">
+        <h3><%= @product.name %></h3>
+
+        <!-- RATING -->
+        <div class="rating d-flex">
+          <p class="text-left mr-4">
+            <a href="#" class="mr-2"><%= @product.average_rating %></a>
+            <% @product.rating.to_i.times do %>
+                          <span class="icon-star text-warning"></span>
+                        <% end %>
+          </p>
+          <p class="text-left">
+            <a href="#" class="mr-2" style="color: #000;">
+              <%= @product.product_variants.count %>
+              <span style="color: #bbb;">Variants</span>
+            </a>
+          </p>
+        </div>
+
+        <!-- PRICE -->
+        <p class="price">
+          <span><%= @product.price_range %></span>
+        </p>
+
+        <!-- DESCRIPTION -->
+        <p><%= @product.description %></p>
+
+        <!-- VARIANT SELECT -->
+        <% if @product.product_variants.any? %>
+          <%= form_with url: cart_items_path, method: :post, local: false, id: "add-to-cart-form" do |f| %>
+            <div class="row mt-4">
+              <div class="col-md-12">
+                <h6 class="mb-3">Select Variant</h6>
+                
+                <!-- Variant Options as Cards -->
+                <div class="variant-options mb-4">
+                  <% @product.product_variants.each_with_index do |variant, index| %>
+                    <div class="variant-card" data-variant-id="<%= variant.id %>" 
+                         data-price="<%= variant.price %>" 
+                         data-stock="<%= variant.inventory_quantity %>">
+                      <input type="radio" 
+                             name="variant_selection" 
+                             id="variant_<%= variant.id %>" 
+                             value="<%= variant.id %>"
+                             <%= 'checked' if index == 0 %>>
+                      <label for="variant_<%= variant.id %>">
+                        <div class="variant-info">
+                          <strong><%= variant.variant_type %>:</strong> <%= variant.value %>
+                          <div class="variant-price">$<%= sprintf('%.2f', variant.price) %></div>
+                          <div class="variant-stock <%= 'text-danger' if variant.inventory_quantity <= 5 %>">
+                            <% if variant.inventory_quantity > 0 %>
+                              <%= variant.inventory_quantity %> in stock
+                            <% else %>
+                              Out of stock
+                            <% end %>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  <% end %>
+                </div>
+
+                <%= f.hidden_field :product_variant_id, value: @product.product_variants.first&.id, id: "selected-variant-id" %>
+              </div>
+
+              <!-- QUANTITY -->
+              <div class="input-group col-md-6 d-flex mb-3">
+                <span class="input-group-btn mr-2">
+                  <button type="button" class="quantity-left-minus btn">
+                    <i class="ion-ios-remove"></i>
+                  </button>
+                </span>
+
+                <%= f.number_field :quantity,
+                     class: "form-control input-number",
+                     value: 1,
+                     min: 1,
+                     id: "quantity-input",
+                     required: true %>
+
+              <span class="input-group-btn ml-2">
+                <button type="button" class="quantity-right-plus btn">
+                  <i class="ion-ios-add"></i>
+                </button>
+              </span>
+            </div>
+
+            <!-- STOCK -->
+            <div class="col-md-12">
+              <p style="color: #000;" id="stock-info">
+                <%= @product.product_variants.sum(:inventory_quantity) %>
+                units available
+              </p>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <p>
+            <% if logged_in? %>
+              <%= f.submit "Add to Cart", class: "btn btn-black py-3 px-5" %>
+            <% else %>
+              <%= link_to "Login to Add to Cart", login_path, class: "btn btn-black py-3 px-5" %>
+            <% end %>
+          </p>
+          <% end %>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- RELATED PRODUCTS -->
+<section class="ftco-section">
+  <div class="container">
+
+    <div class="row justify-content-center mb-3 pb-3">
+      <div class="col-md-12 heading-section text-center ftco-animate">
+        <span class="subheading">Products</span>
+        <h2 class="mb-4">Related Products</h2>
+      </div>
+    </div>
+
+    <div class="row">
+      <% Product.where.not(id: @product.id).limit(4).each do |product| %>
+        <div class="col-md-6 col-lg-3 ftco-animate">
+          <div class="product">
+
+            <%= link_to product_path(product), class: "img-prod" do %>
+              <% if product.image.attached? %>
+                <%= image_tag product.image, class: "img-fluid" %>
+              <% else %>
+                <%= image_tag "product-5.jpg", class: "img-fluid" %>
+              <% end %>
+              <div class="overlay"></div>
+            <% end %>
+
+            <div class="text py-3 pb-4 px-3 text-center">
+              <h3><%= link_to product.name, product_path(product) %></h3>
+
+              <div class="pricing">
+                <p class="price">
+                  <span><%= product.price_range %></span>
+                </p>
+              </div>
+
+              <div class="bottom-area d-flex px-3">
+                <div class="m-auto d-flex">
+                  <% if logged_in? && product.product_variants.any? %>
+                    <%= link_to cart_items_path(product_variant_id: product.product_variants.first.id, quantity: 1),
+                          method: :post,
+                          remote: true,
+                          class: "buy-now d-flex justify-content-center align-items-center mx-1",
+                          title: "Add to Cart" do %>
+                      <span><i class="ion-ios-cart"></i></span>
+                    <% end %>
+                  <% else %>
+                    <%= link_to logged_in? ? product_path(product) : login_path,
+                          class: "buy-now d-flex justify-content-center align-items-center mx-1",
+                          title: logged_in? ? "View Product" : "Login to Add to Cart" do %>
+                      <span><i class="ion-ios-cart"></i></span>
+                    <% end %>
+                  <% end %>
+
+                  <% if logged_in? && product.product_variants.any? %>
+                    <%= link_to wishlist_items_path(product_variant_id: product.product_variants.first.id),
+                          method: :post,
+                          remote: true,
+                          class: "heart d-flex justify-content-center align-items-center",
+                          title: "Add to Wishlist" do %>
+                      <span><i class="ion-ios-heart"></i></span>
+                    <% end %>
+                  <% else %>
+                    <%= link_to logged_in? ? product_path(product) : login_path,
+                          class: "heart d-flex justify-content-center align-items-center",
+                          title: logged_in? ? "View Product" : "Login for Wishlist" do %>
+                      <span><i class="ion-ios-heart"></i></span>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+</section>

@@ -2,9 +2,9 @@
   // Show success notification
   showNotification('<%= j @message %>', 'success');
   
-  // Redirect to home page after a short delay
+  // Redirect to chosen path after a short delay
   setTimeout(function() {
-    window.location.href = '<%= root_path %>';
+    window.location.href = '<%= j @redirect_path || root_path %>';
   }, 1000);
 <% else %>
   // Show error notification

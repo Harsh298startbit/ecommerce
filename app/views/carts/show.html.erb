@@ -168,9 +168,15 @@
     </div>
 
     <p>
-      <%= link_to "Proceed to Checkout",
-            "#",
-            class: "btn btn-primary py-3 px-4" %>
+      <% if logged_in? %>
+        <%= link_to "Proceed to Checkout",
+              new_order_path,
+              class: "btn btn-primary py-3 px-4" %>
+      <% else %>
+        <%= link_to "Login to Checkout",
+              login_path,
+              class: "btn btn-primary py-3 px-4" %>
+      <% end %>
     </p>
   </div>
 </div>

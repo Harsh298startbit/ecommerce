@@ -10071,7 +10071,10 @@ textarea.form-control {
 .ion-ios-menu:before {
     content: "\f1c3" !important;
 }
-  
+.carticon{
+    height: 20px;
+    width:20px;
+  }
 
 
     

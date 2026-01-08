@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_12_22_122200) do
+ActiveRecord::Schema.define(version: 2026_01_07_000004) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -66,6 +66,43 @@ ActiveRecord::Schema.define(version: 2025_12_22_122200) do
     t.index ["name"], name: "index_collections_on_name", unique: true
   end
 
+  create_table "order_items", force: :cascade do |t|
+    t.integer "order_id", null: false
+    t.integer "product_variant_id"
+    t.integer "quantity", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "product_id"
+    t.string "product_name"
+    t.string "variant_name"
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["product_id"], name: "index_order_items_on_product_id"
+    t.index ["product_variant_id"], name: "index_order_items_on_product_variant_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "order_number", null: false
+    t.decimal "total_amount", precision: 10, scale: 2, null: false
+    t.string "status", default: "pending", null: false
+    t.string "stripe_payment_intent_id"
+    t.string "shipping_name", null: false
+    t.text "shipping_address", null: false
+    t.string "shipping_city", null: false
+    t.string "shipping_state"
+    t.string "shipping_zip", null: false
+    t.string "shipping_country", default: "India", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["order_number"], name: "index_orders_on_order_number", unique: true
+    t.index ["status"], name: "index_orders_on_status"
+    t.index ["stripe_payment_intent_id"], name: "index_orders_on_stripe_payment_intent_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
   create_table "product_variants", force: :cascade do |t|
     t.integer "product_id", null: false
     t.string "variant_type"
@@ -96,6 +133,7 @@ ActiveRecord::Schema.define(version: 2025_12_22_122200) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "is_admin", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -114,6 +152,10 @@ ActiveRecord::Schema.define(version: 2025_12_22_122200) do
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "product_variants"
   add_foreign_key "carts", "users"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "product_variants"
+  add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "users"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "collections"
   add_foreign_key "wishlist_items", "product_variants"

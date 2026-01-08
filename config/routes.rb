@@ -11,6 +11,16 @@ Rails.application.routes.draw do
   post 'login', to: 'sessions#create'
   delete 'logout', to: 'sessions#destroy'
   
+  # Admin routes
+  namespace :admin do
+    root 'dashboard#index'
+    resources :products
+    resources :orders, only: [:index, :show, :update]
+    resources :users do
+      post :toggle_admin, on: :member
+    end
+  end
+  
   # Cart routes
   resource :cart, only: [:show] do
     delete :clear, on: :member
@@ -19,6 +29,14 @@ Rails.application.routes.draw do
   
   # Wishlist routes
   resources :wishlist_items, only: [:index, :create, :destroy]
+  
+  # Order and Payment routes
+  resources :orders do
+    get 'checkout', on: :member
+    get 'payment_intent', on: :member
+  end
+  post 'payments', to: 'payments#create'
+  post 'webhooks/stripe', to: 'payments#webhook'
   
   resources :products
   resources :collections

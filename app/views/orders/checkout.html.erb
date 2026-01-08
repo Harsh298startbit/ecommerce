@@ -1,0 +1,141 @@
+<div class="hero-wrap hero-bread" style="background-image: url('<%= asset_path("bg_1.jpg") %>');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs"><span class="mr-2"><%= link_to "Home", root_path %></span> <span>Payment</span></p>
+        <h1 class="mb-0 bread">Complete Payment</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-7 ftco-animate">
+        <div class="billing-form">
+          <h3 class="mb-4 billing-heading">Order Details</h3>
+          <div class="row align-items-end">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Order Number</label>
+                <p class="form-control-plaintext"><strong><%= @order.order_number %></strong></p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Order Date</label>
+                <p class="form-control-plaintext"><strong><%= @order.created_at.strftime("%B %d, %Y") %></strong></p>
+              </div>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Shipping To</label>
+                <p class="form-control-plaintext"><strong><%= @order.shipping_name %></strong></p>
+                <p class="text-muted mb-0"><%= @order.full_address %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-5">
+        <div class="row mt-5 pt-3">
+          <!-- Cart Total -->
+          <div class="col-md-12 d-flex mb-5">
+            <div class="cart-detail cart-total p-3 p-md-4">
+              <h3 class="billing-heading mb-4">Order Total</h3>
+              <p class="d-flex">
+                <span>Subtotal</span>
+                <span>₹<%= number_with_precision(@order.total_amount, precision: 2) %></span>
+              </p>
+              <p class="d-flex">
+                <span>Delivery</span>
+                <span>₹0.00</span>
+              </p>
+              <p class="d-flex">
+                <span>Discount</span>
+                <span>₹0.00</span>
+              </p>
+              <hr>
+              <p class="d-flex total-price">
+                <span>Total</span>
+                <span>₹<%= number_with_precision(@order.total_amount, precision: 2) %></span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="col-md-12">
+            <div class="cart-detail p-3 p-md-4">
+              <h3 class="billing-heading mb-4">Payment Information</h3>
+              
+              <form id="payment-form">
+                <div class="form-group">
+                  <div id="payment-element" style="min-height: 200px;">
+                    <!-- Stripe Payment Element will be inserted here -->
+                  </div>
+                </div>
+
+                <div id="payment-message" class="alert alert-danger" style="display: none;" role="alert">
+                  <span id="error-text"></span>
+                </div>
+
+                <div class="form-group">
+                  <div class="col-md-12">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" value="" class="mr-2" id="terms-checkbox" required> 
+                        I have read and accept the terms and conditions
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <p>
+                  <button 
+                    type="submit"
+                    id="submit-button" 
+                    class="btn btn-primary py-3 px-4"
+                  >
+                    <span id="button-text">
+                      <i class="ion-ios-lock mr-2"></i>
+                      Pay ₹<%= number_with_precision(@order.total_amount, precision: 2) %>
+                    </span>
+                    <span id="spinner" style="display: none;">
+                      <i class="ion-ios-refresh mr-2"></i>
+                      Processing...
+                    </span>
+                  </button>
+                </p>
+
+                <div class="text-center mt-3">
+                  <p class="text-muted small">
+                    <i class="ion-ios-lock mr-1"></i>
+                    Secured by Stripe
+                  </p>
+                </div>
+              </form>
+
+              <div class="text-center mt-3">
+                <%= link_to orders_path, class: "text-primary" do %>
+                  <i class="ion-ios-arrow-back mr-1"></i> Back to Orders
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Store order and payment intent info
+  window.orderData = {
+    orderId: <%= @order.id %>,
+    paymentIntentId: '<%= @order.stripe_payment_intent_id %>',
+    amount: <%= @order.total_amount %>
+  };
+</script>

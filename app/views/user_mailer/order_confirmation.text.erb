@@ -1,0 +1,35 @@
+Order Confirmation - <%= @order.order_number %>
+==========================================
+
+Thank you for your order, <%= @user.name %>!
+
+Your order has been confirmed and will be shipped soon.
+
+Order Details:
+--------------
+Order Number: <%= @order.order_number %>
+Order Date: <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+Status: <%= @order.status.titleize %>
+
+Shipping Address:
+-----------------
+<%= @order.shipping_name %>
+<%= @order.shipping_address %>
+<%= @order.shipping_city %>, <%= @order.shipping_state %> <%= @order.shipping_zip %>
+<%= @order.shipping_country %>
+
+Order Items:
+------------
+<% @order.order_items.each do |item| %>
+<%= item.product_name %><% if item.variant_name.present? %> - Size: <%= item.variant_name %><% end %>
+Quantity: <%= item.quantity %> × ₹<%= sprintf('%.2f', item.price) %> = ₹<%= sprintf('%.2f', item.subtotal) %>
+
+<% end %>
+
+Total: ₹<%= sprintf('%.2f', @order.total_amount) %>
+
+View your order: <%= ENV['MAILER_HOST'] || 'http://localhost:3000' %>/orders/<%= @order.id %>
+
+If you have any questions about your order, please contact us.
+
+Thank you for shopping with us!

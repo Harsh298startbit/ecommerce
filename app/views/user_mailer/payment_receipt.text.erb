@@ -1,0 +1,40 @@
+Payment Receipt - <%= @order.order_number %>
+==========================================
+
+✓ PAYMENT SUCCESSFUL
+
+Thank you for your payment, <%= @user.name %>!
+
+Payment Details:
+----------------
+Order Number: <%= @order.order_number %>
+Payment Date: <%= Time.now.strftime("%B %d, %Y at %I:%M %p") %>
+Amount Paid: ₹<%= sprintf('%.2f', @order.total_amount) %>
+Payment Method: Credit/Debit Card via Stripe
+<% if @order.stripe_payment_intent_id.present? %>
+Transaction ID: <%= @order.stripe_payment_intent_id %>
+<% end %>
+
+Order Summary:
+--------------
+<% @order.order_items.each do |item| %>
+<%= item.product_name %><% if item.variant_name.present? %> - Size: <%= item.variant_name %><% end %>
+Quantity: <%= item.quantity %> × ₹<%= sprintf('%.2f', item.price) %> = ₹<%= sprintf('%.2f', item.subtotal) %>
+
+<% end %>
+
+Total Paid: ₹<%= sprintf('%.2f', @order.total_amount) %>
+
+Shipping To:
+------------
+<%= @order.shipping_name %>
+<%= @order.shipping_address %>
+<%= @order.shipping_city %>, <%= @order.shipping_state %> <%= @order.shipping_zip %>
+<%= @order.shipping_country %>
+
+Your order will be processed and shipped within 2-3 business days.
+
+Track your order: <%= ENV['MAILER_HOST'] || 'http://localhost:3000' %>/orders/<%= @order.id %>
+
+Keep this email for your records.
+If you have any questions, please contact our support team.

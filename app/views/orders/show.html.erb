@@ -1,0 +1,257 @@
+<div class="hero-wrap hero-bread" style="background-image: url('<%= asset_path("bg_1.jpg") %>');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs">
+          <span class="mr-2"><%= link_to "Home", root_path %></span>
+          <span class="mr-2"><%= link_to "Orders", orders_path %></span>
+          <span>Order Details</span>
+        </p>
+        <h1 class="mb-0 bread">Order #<%= @order.order_number %></h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <!-- Order Status Card -->
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-body p-4">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h3 class="mb-2">
+                  <i class="ion-ios-information-circle-outline mr-2"></i>
+                  Order Information
+                </h3>
+                <p class="text-muted mb-0">
+                  <i class="ion-ios-calendar-outline mr-1"></i>
+                  Placed on <%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+                </p>
+              </div>
+              <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                <span class="badge badge-pill px-4 py-2 <%= 
+                  case @order.status
+                  when 'paid', 'completed' then 'badge-success'
+                  when 'pending', 'processing' then 'badge-warning'
+                  when 'failed', 'cancelled' then 'badge-danger'
+                  else 'badge-secondary'
+                  end
+                %>" style="font-size: 14px;">
+                  <i class="ion-ios-checkmark-circle-outline mr-1"></i>
+                  <%= @order.status.titleize %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping and Payment Info -->
+        <div class="row mb-4">
+          <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card shadow-sm h-100 border-0">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                  <i class="ion-ios-location-outline mr-2"></i>
+                  Shipping Address
+                </h5>
+              </div>
+              <div class="card-body p-4">
+                <p class="mb-2"><strong><%= @order.shipping_name %></strong></p>
+                <p class="mb-2 text-muted"><%= @order.full_address %></p>
+                <hr class="my-3">
+                <p class="mb-1">
+                  <i class="ion-ios-mail-outline mr-2"></i>
+                  <%= @order.email %>
+                </p>
+                <% if @order.phone.present? %>
+                  <p class="mb-0">
+                    <i class="ion-ios-call-outline mr-2"></i>
+                    <%= @order.phone %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-0">
+              <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                  <i class="ion-ios-card-outline mr-2"></i>
+                  Payment Information
+                </h5>
+              </div>
+              <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-muted">Order Total:</span>
+                  <h4 class="mb-0 text-success">
+                    ₹<%= number_with_precision(@order.total_amount, precision: 2) %>
+                  </h4>
+                </div>
+                <% if @order.stripe_payment_intent_id.present? %>
+                  <hr class="my-3">
+                  <p class="mb-0 small text-muted">
+                    <i class="ion-ios-key-outline mr-2"></i>
+                    Payment ID: <code><%= @order.stripe_payment_intent_id %></code>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-bottom">
+            <h4 class="mb-0">
+              <i class="ion-ios-cart-outline mr-2"></i>
+              Order Items
+            </h4>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th width="80">Image</th>
+                    <th>Product</th>
+                    <th width="120" class="text-center">Quantity</th>
+                    <th width="150" class="text-right">Price</th>
+                    <th width="150" class="text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @order.order_items.each do |item| %>
+                    <tr>
+                      <td>
+                        <% if item.product.image.attached? %>
+                          <%= image_tag item.product.image, class: "img-thumbnail", style: "width: 60px; height: 60px; object-fit: cover;" %>
+                        <% else %>
+                          <div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="ion-ios-image-outline" style="font-size: 24px; color: #ccc;"></i>
+                          </div>
+                        <% end %>
+                      </td>
+                      <td class="align-middle">
+                        <h6 class="mb-1"><%= item.product_name %></h6>
+                        <small class="text-muted">
+                          <i class="ion-ios-resize-outline mr-1"></i>
+                          Size: <%= item.variant_name %>
+                        </small>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="badge badge-secondary badge-pill">× <%= item.quantity %></span>
+                      </td>
+                      <td class="align-middle text-right">
+                        <span class="text-muted">₹<%= number_with_precision(item.price, precision: 2) %></span>
+                      </td>
+                      <td class="align-middle text-right">
+                        <strong>₹<%= number_with_precision(item.subtotal, precision: 2) %></strong>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+                <tfoot class="bg-light">
+                  <tr>
+                    <td colspan="4" class="text-right align-middle">
+                      <h5 class="mb-0">Total Amount:</h5>
+                    </td>
+                    <td class="text-right align-middle">
+                      <h4 class="mb-0 text-success">
+                        ₹<%= number_with_precision(@order.total_amount, precision: 2) %>
+                      </h4>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center mt-4 pt-3">
+          <%= link_to orders_path, class: "btn btn-outline-primary mr-3" do %>
+            <i class="ion-ios-arrow-back mr-2"></i>Back to Orders
+          <% end %>
+          
+          <% if @order.pending? %>
+            <%= link_to checkout_order_path(@order), class: "btn btn-success" do %>
+              <i class="ion-ios-card-outline mr-2"></i>Complete Payment
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section ftco-no-pt ftco-no-pb py-5 bg-light">
+  <div class="container py-4">
+    <div class="row d-flex justify-content-center py-5">
+      <div class="col-md-6">
+        <h2 style="font-size: 22px;" class="mb-0">Need Help with Your Order?</h2>
+        <span>Contact our customer support team for assistance</span>
+      </div>
+      <div class="col-md-6 d-flex align-items-center">
+        <div class="w-100">
+          <%= link_to "#", class: "btn btn-primary btn-block py-3" do %>
+            <i class="ion-ios-mail-outline mr-2"></i>Contact Support
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .card {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    border-radius: 10px 10px 0 0;
+  }
+
+  .badge-pill {
+    font-weight: 600;
+  }
+
+  .table td, .table th {
+    vertical-align: middle;
+    padding: 1rem;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .img-thumbnail {
+    border-radius: 8px;
+  }
+
+  code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .btn {
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .ion-ios-checkmark-circle-outline {
+    font-size: 18px;
+  }
+</style>

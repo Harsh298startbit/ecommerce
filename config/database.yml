@@ -21,8 +21,8 @@ test:
   database: db/test.sqlite3
 
 production:
-  <<: *default
-  database: ecommerce_3d0l
-  username: ecommerce_3d0l_user
-  password: umXEc1AhVxilpHwoONYBqOaeBLDghOrL
- 
+production:
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV['DATABASE_URL'] || 'postgresql://ecommerce_3d0l_user:umXEc1AhVxilpHwoONYBqOaeBLDghOrL@dpg-d5eegm1r0fns73d4t4s0-a.virginia-postgres.render.com/ecommerce_3d0l' %>

@@ -49,6 +49,11 @@ console.log("waypoint available:", typeof $.fn.waypoint === 'function')
 require("../src/main")
 
 // ----------------------------
+// Stripe Checkout
+// ----------------------------
+require("../src/stripe_checkout")
+
+// ----------------------------
 // Custom JS (LAST)
 // ----------------------------
 // import "../src/main"

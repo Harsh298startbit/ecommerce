@@ -1,0 +1,134 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <div class="mb-3">
+        <%= f.label :name, class: "form-label" %>
+        <%= f.text_field :name, class: "form-control", placeholder: "Product name" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, class: "form-label" %>
+        <%= f.text_area :description, class: "form-control", rows: 3, placeholder: "Product description" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :collection_id, "Collection", class: "form-label" %>
+        <%= f.collection_select :collection_id, Collection.all, :id, :name, 
+            { prompt: "Select a collection" }, 
+            { class: "form-control" } %>
+      </div>
+
+      
+
+      <div class="mb-3">
+        <%= f.label :rating, class: "form-label" %>
+        <%= f.number_field :rating, step: 0.1, min: 0, max: 5, class: "form-control", placeholder: "Rating (0-5)" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :discount_percentage, "Discount %", class: "form-label" %>
+        <%= f.number_field :discount_percentage, step:1, min: 0, max: 100, class: "form-control", placeholder: "Discount percentage" %>
+      </div>
+
+      <div class="form-check mb-3">
+        <%= f.check_box :featured, class: "form-check-input" %>
+        <%= f.label :featured, class: "form-check-label" %>
+      </div>
+
+      <div class="mb-4">
+        <%= f.label :image, class: "form-label" %>
+        <%= f.file_field :image, class: "form-control" %>
+      </div>
+
+      <hr>
+
+      <h5 class="mb-3">Product Variants</h5>
+      <p class="text-muted small">Add different variants like sizes, colors, or weights for this product.</p>
+
+      <div id="variants-container" class="mb-3">
+        <%= f.fields_for :product_variants do |variant_form| %>
+          <%= render 'variant_fields', f: variant_form %>
+        <% end %>
+      </div>
+
+      <div class="mb-4">
+        <button type="button" id="add-variant-button" class="btn btn-outline-primary">
+          <i class="ion-ios-add"></i> Add Another Variant
+        </button>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <%= f.submit "Save Product", class: "btn btn-primary" %>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<%- content_for :javascript do %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const variantsContainer = document.getElementById('variants-container');
+  const addButton = document.getElementById('add-variant-button');
+  
+  if (!addButton) return;
+  
+  // Add new variant
+  addButton.addEventListener('click', function() {
+    const timestamp = new Date().getTime();
+    const newVariantHtml = `
+      <div class="variant-field-group border rounded p-3 mb-3 bg-light">
+        <div class="row">
+          <div class="col-md-3">
+            <label class="form-label">Variant Type</label>
+            <input type="text" name="product[product_variants_attributes][${timestamp}][variant_type]" class="form-control" placeholder="e.g. Size, Color, Weight">
+          </div>
+          
+          <div class="col-md-3">
+            <label class="form-label">Value</label>
+            <input type="text" name="product[product_variants_attributes][${timestamp}][value]" class="form-control" placeholder="e.g. Small, Red, 1kg">
+          </div>
+          
+          <div class="col-md-2">
+            <label class="form-label">Price ($)</label>
+            <input type="number" step="0.01" name="product[product_variants_attributes][${timestamp}][price]" class="form-control" placeholder="0.00">
+          </div>
+          
+          <div class="col-md-2">
+            <label class="form-label">Stock</label>
+            <input type="number" name="product[product_variants_attributes][${timestamp}][inventory_quantity]" class="form-control" placeholder="0">
+          </div>
+          
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm remove-variant-btn w-100">
+              <i class="ion-ios-trash"></i> Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    variantsContainer.insertAdjacentHTML('beforeend', newVariantHtml);
+  });
+  
+  // Remove variant (using event delegation)
+  variantsContainer.addEventListener('click', function(e) {
+    const removeBtn = e.target.closest('.remove-variant-btn');
+    if (removeBtn) {
+      const variantGroup = removeBtn.closest('.variant-field-group');
+      const destroyInput = variantGroup.querySelector('input[name*="_destroy"]');
+      
+      if (destroyInput) {
+        // For existing variants, mark for destruction
+        destroyInput.value = '1';
+        variantGroup.style.display = 'none';
+      } else {
+        // For new variants, just remove from DOM
+        variantGroup.remove();
+      }
+    }
+  });
+});
+</script>
+<%- end %>

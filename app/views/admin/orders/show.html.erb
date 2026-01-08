@@ -1,0 +1,209 @@
+<div class="hero-wrap hero-bread" style="background-image: url('<%= asset_path("bg_1.jpg") %>');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+        <p class="breadcrumbs">
+          <span class="mr-2"><%= link_to "Home", root_path %></span> 
+          <span class="mr-2"><%= link_to "Admin", admin_root_path %></span>
+          <span class="mr-2"><%= link_to "Orders", admin_orders_path %></span>
+          <span>Order #<%= @order.order_number %></span>
+        </p>
+        <h1 class="mb-0 bread">Order Details</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+      <!-- Order Items Section - Full width on mobile, 8 cols on larger screens -->
+      <div class="col-12 col-lg-8 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="mb-0">Order Items</h4>
+          </div>
+          <div class="card-body p-0">
+            <!-- Desktop Table View - Hidden on mobile -->
+            <div class="table-responsive d-none d-md-block">
+              <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Product</th>
+                    <th>Variant</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @order_items.each do |item| %>
+                    <tr>
+                      <td><%= item.product_name %></td>
+                      <td><%= item.variant_name %></td>
+                      <td>$<%= number_with_precision(item.price, precision: 2) %></td>
+                      <td><%= item.quantity %></td>
+                      <td>$<%= number_with_precision(item.subtotal, precision: 2) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+                <tfoot class="bg-light">
+                  <tr>
+                    <td colspan="4" class="text-right font-weight-bold">Total:</td>
+                    <td class="font-weight-bold">$<%= number_with_precision(@order.total_amount, precision: 2) %></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <!-- Mobile Card View - Visible only on mobile -->
+            <div class="d-md-none">
+              <% @order_items.each_with_index do |item, index| %>
+                <div class="p-3 <%= 'border-bottom' unless index == @order_items.length - 1 %>">
+                  <h6 class="font-weight-bold mb-2"><%= item.product_name %></h6>
+                  <div class="row mb-1">
+                    <div class="col-6 text-muted small">Variant:</div>
+                    <div class="col-6 text-right"><%= item.variant_name %></div>
+                  </div>
+                  <div class="row mb-1">
+                    <div class="col-6 text-muted small">Price:</div>
+                    <div class="col-6 text-right">$<%= number_with_precision(item.price, precision: 2) %></div>
+                  </div>
+                  <div class="row mb-1">
+                    <div class="col-6 text-muted small">Quantity:</div>
+                    <div class="col-6 text-right"><%= item.quantity %></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6 font-weight-bold">Subtotal:</div>
+                    <div class="col-6 text-right font-weight-bold">$<%= number_with_precision(item.subtotal, precision: 2) %></div>
+                  </div>
+                </div>
+              <% end %>
+              
+              <!-- Mobile Total -->
+              <div class="p-3 bg-light">
+                <div class="row">
+                  <div class="col-6">
+                    <h5 class="mb-0 font-weight-bold">Total:</h5>
+                  </div>
+                  <div class="col-6 text-right">
+                    <h5 class="mb-0 font-weight-bold">$<%= number_with_precision(@order.total_amount, precision: 2) %></h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Section - Full width on mobile, 4 cols on larger screens -->
+      <div class="col-12 col-lg-4">
+        <!-- Order Information Card -->
+        <div class="card mb-3 mb-md-4">
+          <div class="card-header">
+            <h4 class="mb-0">Order Information</h4>
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <strong class="d-block d-sm-inline">Order Number:</strong> 
+              <span class="d-block d-sm-inline"><%= @order.order_number %></span>
+            </div>
+            <div class="mb-2">
+              <strong class="d-block d-sm-inline">Date:</strong> 
+              <span class="d-block d-sm-inline"><%= @order.created_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+            </div>
+            <div class="mb-3">
+              <strong class="d-block mb-1">Status:</strong> 
+              <span class="badge badge-<%= 
+                case @order.status
+                when 'completed' then 'success'
+                when 'paid' then 'info'
+                when 'cancelled' then 'danger'
+                else 'warning'
+                end
+              %> badge-lg">
+                <%= @order.status.titleize %>
+              </span>
+            </div>
+            
+            <%= form_with model: @order, url: admin_order_path(@order), method: :patch, local: true do |f| %>
+              <div class="form-group">
+                <%= f.label :status, "Update Status:" %>
+                <%= f.select :status, 
+                    options_for_select([['Pending', 'pending'], ['Paid', 'paid'], ['Completed', 'completed'], ['Cancelled', 'cancelled']], @order.status),
+                    {}, 
+                    { class: 'form-control' } %>
+              </div>
+              <%= f.submit "Update Status", class: "btn btn-primary btn-block" %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Customer Information Card -->
+        <div class="card mb-3 mb-md-4">
+          <div class="card-header">
+            <h4 class="mb-0">Customer Information</h4>
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <strong class="d-block d-sm-inline">Name:</strong> 
+              <span class="d-block d-sm-inline"><%= @order.user.name %></span>
+            </div>
+            <div class="mb-2">
+              <strong class="d-block d-sm-inline">Email:</strong> 
+              <span class="d-block d-sm-inline word-break"><%= @order.email %></span>
+            </div>
+            <div class="mb-0">
+              <strong class="d-block d-sm-inline">Phone:</strong> 
+              <span class="d-block d-sm-inline"><%= @order.phone %></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Address Card -->
+        <div class="card mb-3 mb-md-0">
+          <div class="card-header">
+            <h4 class="mb-0">Shipping Address</h4>
+          </div>
+          <div class="card-body">
+            <p class="mb-1"><%= @order.shipping_name %></p>
+            <p class="mb-1"><%= @order.shipping_address %></p>
+            <p class="mb-1"><%= @order.shipping_city %>, <%= @order.shipping_state %> <%= @order.shipping_zip %></p>
+            <p class="mb-0"><%= @order.shipping_country %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .word-break {
+    word-break: break-word;
+  }
+  
+  .badge-lg {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  @media (max-width: 767.98px) {
+    .card-header h4 {
+      font-size: 1.25rem;
+    }
+    
+    .breadcrumbs {
+      font-size: 0.875rem;
+    }
+    
+    .hero-wrap.hero-bread {
+      padding: 2rem 0;
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .table {
+      font-size: 0.875rem;
+    }
+  }
+</style>
